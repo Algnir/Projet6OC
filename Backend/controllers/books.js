@@ -51,6 +51,14 @@ exports.modifyBook = (req, res, next) => {
       if (book.userId != req.auth.userId) {
         res.status(401).json({ message: "Not authorized" });
       } else {
+        if (req.file) {
+          const oldImageUrl = book.imageUrl;
+          const filename = oldImageUrl.split('/images/')[1];
+          fs.unlink(`images/${filename}`, (err) => {
+            if (err) console.log(err);
+          });
+        }
+
         Book.updateOne(
           { _id: req.params.id },
           { ...bookObject, _id: req.params.id }
@@ -86,7 +94,6 @@ exports.deleteBook = (req, res, next) => {
 };
 
 exports.bestRating = (req, res, next) => {
-  console.log('man on passe ici');
   Book.find()
     .sort({ averageRating: -1 })
     .limit(3)
@@ -133,4 +140,3 @@ exports.addRating = (req, res, next) => {
         .json({ error: "An error occurred while rating the book." });
     });
 };
-
