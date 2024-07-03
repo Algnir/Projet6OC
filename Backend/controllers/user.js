@@ -5,9 +5,9 @@ const User = require('../models/User');
 
 exports.signup = (req, res, next) => {
   bcrypt
-    .hash(req.body.password, 10)
+    .hash(req.body.password, 10) //Utilisation de bcrypt pour que le mdp ne soit pas reconnaissable dans la base de données
     .then((hash) => {
-      const user = new User({
+      const user = new User({ //Création à partir du model User
         email: req.body.email,
         password: hash,
       });
@@ -25,7 +25,7 @@ exports.login = (req, res, next) => {
             if (!user) {
                 return res.status(401).json({ error: 'Utilisateur non trouvé !' });
             }
-            bcrypt.compare(req.body.password, user.password)
+            bcrypt.compare(req.body.password, user.password) // On utilise bcrypt pour le mdp
                 .then(valid => {
                     if (!valid) {
                         return res.status(401).json({ error: 'Mot de passe incorrect !' });
@@ -35,7 +35,7 @@ exports.login = (req, res, next) => {
                         token: jwt.sign(
                             { userId: user._id },
                             'RANDOM_TOKEN_SECRET',
-                            { expiresIn: '24h' }
+                            { expiresIn: '24h' } // Utilisation de jwt pour obtenir un token pour l'utiliser dans le middle auth
                         )
                     });
                 })
